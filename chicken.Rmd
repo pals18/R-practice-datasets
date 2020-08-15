@@ -1,0 +1,101 @@
+---
+title: "Assignment 1: Case 1"
+output:
+  pdf_document: default
+  word_document: default
+date: "04/02/2020"
+author: "Jyotsna Dalal, Pallav Walia, Shashank Singhal"
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,fig.height = 4,fig.width = 6,fig.align = "center")
+library(tidyverse)
+library(rcompanion)
+```
+
+
+
+
+## Data
+
+The data gives us detailed information about 4 different diets given to 50 chickens for a period of 21 days. There are 578 observations over 4 variables. Weight (in gms) and Time (in days) are numeric variables whereas Chicken and Diet are factor variables. The first few rows of the data look like this-
+
+```{r,include=TRUE}
+head(ChickWeight)
+```
+
+
+```{r,include=TRUE}
+summary(ChickWeight)
+```
+
+Summary of the data shows that the weight of a chicken ranges from 35 gms to 373 gms and there are no missing values in data.
+
+
+## Analysis
+
+We get a basic overview of the data by plotting a simple box and whiskers of the four diets against weight. The range of weight on day 0 is from 39 gms to 43 gms with mean appox. 41 gms shown by a horizontal dashed line and the spread in highest for Diet 2. On day 20, the median of "Diet 3" is highest followed by "Diet 4". The mean weight has increased from 43 to 210 gms 
+
+
+## Weight Distribution
+```{r, echo=FALSE}
+day0<-filter(ChickWeight,Time==0)
+day20<-filter(ChickWeight,Time==20)
+c1<-rainbow(4)
+par(mfrow=c(1,2))
+par(mar=c(4,4,3,1))
+boxplot(day0$weight~day0$Diet,medcol=c1,ylim=c(35,60),
+        main="Day 0",xlab = "Type of Diet",ylab = "Weight (in gms)") %>%
+        abline(h=mean(day0$weight),lty=2,lwd=3)
+boxplot(day20$weight~day20$Diet,medcol=c1,ylim=c(80,400),
+        main="Day 20",xlab = "Type of Diet",ylab = "Weight (in gms)") %>%
+        abline(h=mean(day20$weight),lty=2,lwd=3)
+```
+
+
+
+\vspace{30pt}
+
+
+
+Next we look into the variations of weight with time. If we plot a bar graph of the four diets with average weight plotted against time, it will provide a better understanding of the effects of these diets on chickens over a period of time. For creating this graph, we need to first calculate the day wise mean weight among all diets using pipes function,then with the help of ggplot, we can compare the average weight of all diets using linear regression.
+
+```{r,echo=FALSE,fig.height = 3,fig.width = 6,fig.align = "center"}
+chick_mean<-ChickWeight %>% 
+  group_by(Diet,Time) %>% 
+  summarise(average_weight=mean(weight)
+)
+ggplot(data=chick_mean,mapping=aes(x=Time,y=average_weight,color=Diet))+
+  geom_point()+geom_smooth(method=lm,se=FALSE)+
+  labs(title="Variation in Average Weight with Time",x="No. of Days",y="Average Weight")
+```
+
+
+During the first week, "Diet 4" has the most positive impact however after 20 days, "Diet 3" stands out to be most effective among all with average chicken weight above 250 gms. There is a postive correlation between time and average weight for all the diets.
+
+For calculationg the confidence interval of mean weight on day 20 for each diet, we will use rcompanion library to summarise the results of mean and confidence interval and store the result in a new data frame called day20stats.
+
+```{r,echo=FALSE}
+day20stats=groupwiseMean(weight~Diet,data=day20,conf=.95,digits = 4)
+ggplot(day20stats,aes(x=Diet,y=Mean))+     geom_errorbar(aes(ymin=Trad.lower,ymax=Trad.upper),width=0.1,size=0.5)+     geom_point(shape=15,size=3)+
+labs(title="95% Confidence Interval",x="Type of Diet",y="Average Weight (CI)")+theme_bw()
+```
+
+```{r}
+day20stats
+```
+
+
+Confidence Interval gives us the level of certainity that the true value of population mean lies in the interval. The graph of CI tells us that "Diet 3" and "Diet 4" definitely increase the average weight more than "Diet 1". For overlapping confidence intervals, a t-test for unknown poplution mean can tell us which mean is higher than the others.
+
+## Limitations
+
+Though the data shows the relationship between different diets and weight during a period of time but it does not specify the other factors like sex, feeding practices, vaccination etc. which may have contributed to the growth of chickens during the 20 days. With additional inputs, the exploratory data analysis would be more useful for understanding different pattern in the growth of chickens.
+
+
+## Conclusion
+
+The conclusion from the this analysis is that each diet has increased the weight of chicken in 20 days. "Diet 3" being the most effective followed by "Diet 4". "Diet 1" is the least effective and "Diet 2" gives highely spreaded results with lower bound at 76 gms and upper bound at 318 gms on day 20.
+

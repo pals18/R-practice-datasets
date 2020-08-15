@@ -1,0 +1,95 @@
+---
+title: "Assignment 1: Case 3"
+author: "Jyotsna Dalal, Pallav Walia, Shashsank Singhal"
+date: "04-02-2020"
+geometry: "left=3cm,right=3cm,top=1cm,bottom=2cm"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+```
+
+### Introduction to Data
+The dataset Diamonds has 53940 observtaion with 11 variables. Out of 11 variables 3 are categorical variables i.e. cut, color & clarity and rest of the varaibles like price, carat etc. are continuous variables. The data set looks like:
+
+```{r echo=FALSE, warning=FALSE}
+head(diamonds)
+```
+
+
+```{r include=FALSE, warning=FALSE}
+summary(diamonds)
+```
+
+The table displays the detailed information about the prices of diamonds and its properties. The price ranges from $326 to $18823 with a mean of $3933 and approx. 60% of the diamonds are of "premium" or "ideal" cut. Half of the diamonds are less than 0.7 carat with highest value at 5.01 and the distribution of data is right skewed.
+
+Therefore, initially we can focus our analysis on observing a relationship between price and its properties. 
+
+## Analysis 
+
+The dataset has many variables, we will focus on specific variables to get an understanding how these variables  are related to  Price and with each other. We will take price, carat, clarity, color, depth & cut into consideration. Let's have a closer look on each variable-
+
+## Price vs Carat
+
+```{r echo=FALSE, fig.align="center", fig.height=3, fig.width=5, message=FALSE, warning=FALSE, paged.print=FALSE}
+library(ggplot2)
+ggplot(data= diamonds,aes(x=carat,y=price)) +geom_point()+labs(title ="Price vs Carat")+geom_smooth(se=FALSE)
+```
+
+\vspace{50pt}
+
+The scatter plot between price and carat shows a postive correation with some outliers. Therefore we further need to investigate the effect of other variables on price.
+
+# Price vs Carat based on Clarity
+
+
+```{r echo=FALSE, warning=FALSE, fig.height=4,fig.width=6,fig.align="center"}
+library(ggplot2)
+ggplot(data= diamonds,aes(x=carat,y=price,color=clarity)) +geom_point()+labs(title ="Price vs Carat based on Clarity")+facet_wrap(clarity~.)+theme_bw()
+```
+
+\vspace{60pt}
+
+Interestingly the price of higher clarity grade diamond (IF) increases exponentially as compared with low quality diamond (I1) which has a linear relationship. As we move from lower clarity grade to higher clarity grade, the slople of the graph becomes steeper.
+
+\vspace{60pt}
+
+# Price vs Carat based on Cut
+
+
+```{r echo=FALSE, warning=FALSE, fig.height=4,fig.width=5,fig.align="center"}
+library(ggplot2)
+ggplot(data= diamonds,aes(x=carat,y=price,color=cut))+geom_smooth(method="lm",se=FALSE)+labs(title ="Price vs Carat based on Cut")+theme_bw()
+```
+
+\vspace{40pt}
+
+Based on the graph, it looks like only fair cut category of diamonds are impacting the price as the slope is flatter than the other cut types. We can not say much from this information on the impact of cut type on price of diamonds.
+
+
+# Price vs Carat based on Color
+
+```{r echo=FALSE, warning=FALSE, fig.height=5,fig.width=6,fig.align="center"}
+library(ggplot2)
+ggplot(data= diamonds,aes(x=carat,y=price,color=color)) +geom_point()+labs(title ="Price vs Carat based on Color")+facet_wrap(color~.)+theme_bw()
+```
+
+The graph depicts that the price of higher color grade diamond (D) increases exponentially as compared with lower color grade (J). As we move from higher color grade to lower color grade, the slople of the graph becomes flatter.
+
+Also when we look for cooreation between the continuous variables, only price and carat appear to be coorelated as evident from the following results-
+
+```{r echo=FALSE}
+mydata<-diamonds %>% select(price,carat,depth,table)
+cor(mydata)
+```
+
+
+## Conclusion
+
+From the above analysis we can infer that there are multiple factors which act as price driver for diamonds. Carat seems to be the one of the most influencial factors among all.However, it is difficult to determine how much the price of a diamond can move with a unit change in any of the independent variables or predictors. To determine the relationship between price and other variables we need to dig deeper into the data and try to establish a linear regression model which will help us in estimating the relation between variables.
+
