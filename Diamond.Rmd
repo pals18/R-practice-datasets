@@ -1,6 +1,4 @@
 ---
-title: "Assignment 1: Case 3"
-author: "Jyotsna Dalal, Pallav Walia, Shashsank Singhal"
 date: "04-02-2020"
 geometry: "left=3cm,right=3cm,top=1cm,bottom=2cm"
 output:
